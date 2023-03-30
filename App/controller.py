@@ -25,6 +25,7 @@ import model
 import time
 import csv
 import tracemalloc
+csv.field_size_limit(2147483647) 
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -36,18 +37,56 @@ def new_controller():
     Crea una instancia del modelo
     """
     #TODO: Llamar la función del modelo que crea las estructuras de datos
-    pass
+    control = {
+        'model': None
+    }
+    control['model'] = model.newCatalog()
+    return control
 
 
 # Funciones para la carga de datos
 
-def load_data(control, filename):
+def load_data(control, filesize):
     """
     Carga los datos del reto
     """
     # TODO: Realizar la carga de datos
-    pass
+    data_structs = control['model']
+    str_conc = filesize_converter(filesize) #Pedazo de string que concatenaremos
+    datafile = cf.data_dir + 'DIAN/Salida_agregados_renta_juridicos_AG' + str_conc + ".csv"
+    input_file = csv.DictReader(open(datafile, encoding='utf-8'))
+    for data in input_file:
+        model.add_data(data_structs, data)
+    return model.data_size(data_structs)
 
+def filesize_converter(filesize):
+    """
+    Esta funcion convierte el valor enviado desde el menú a un string para introducir
+    en la ruta del archivo
+    """
+    return_var = None
+    if int(filesize) == 1:
+        return_var = "-small"
+    if int(filesize) == 2:
+        return_var = "-5pct"
+    if int(filesize) == 3:
+        return_var = "-10pct"
+    if int(filesize) == 4:
+        return_var = "-20pct"
+    if int(filesize) == 5:
+        return_var = "-30pct"
+    if int(filesize) == 6:
+        return_var = "-50pct"
+    if int(filesize) == 7:
+        return_var = "-80pct"
+    if int(filesize) == 8:
+        return_var = "-large"
+    
+    return return_var
+
+def print_carga(control):
+    data_structs = control["model"]
+    model.print_carga_datos(data_structs)
 
 # Funciones de ordenamiento
 
@@ -57,6 +96,10 @@ def sort(control):
     """
     #TODO: Llamar la función del modelo para ordenar los datos
     pass
+
+def sort_year_lists(control):
+    data_structs = control["model"]
+    model.sort_year_lists(data_structs)
 
 
 # Funciones de consulta sobre el catálogo

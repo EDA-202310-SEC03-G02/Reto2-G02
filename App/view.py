@@ -32,6 +32,9 @@ assert cf
 from tabulate import tabulate
 import traceback
 
+default_limit = 1000 
+sys.setrecursionlimit(default_limit*10) 
+
 """
 La vista se encarga de la interacción con el usuario
 Presenta el menu de opciones y por cada seleccion
@@ -45,7 +48,8 @@ def new_controller():
         Se crea una instancia del controlador
     """
     #TODO: Llamar la función del controlador donde se crean las estructuras de datos
-    pass
+    control = controller.new_controller()
+    return control
 
 
 def print_menu():
@@ -60,15 +64,33 @@ def print_menu():
     print("8- Ejecutar Requerimiento 7")
     print("9- Ejecutar Requerimiento 8")
     print("0- Salir")
+    
+def print_menu_file_size():
+    print("Escoja el tamaño de archivo que desea utilizar:")
+    print("1- small")
+    print("2- 5%")
+    print("3- 10%")
+    print("4- 20%")
+    print("5- 30%")
+    print("6- 50%")
+    print("7- 80%")
+    print("8- large")
 
 
-def load_data(control):
+def load_data(control , filesize):
     """
     Carga los datos
     """
     #TODO: Realizar la carga de datos
-    pass
+    data = controller.load_data(control , filesize)
+    return data
 
+def sort_year_lists(control):
+    controller.sort_year_lists(control)
+    
+def print_carga_datos(data_size , control):
+    print('Lineas cargadas: ' + str(data_size))
+    controller.print_carga(control)
 
 def print_data(control, id):
     """
@@ -142,7 +164,7 @@ def print_req_8(control):
 
 
 # Se crea el controlador asociado a la vista
-control = new_controller()
+#control = new_controller()
 
 # main del reto
 if __name__ == "__main__":
@@ -157,7 +179,15 @@ if __name__ == "__main__":
         try:
             if int(inputs) == 1:
                 print("Cargando información de los archivos ....\n")
-                data = load_data(control)
+                control = new_controller()
+                print_menu_file_size()
+                filesize = input("Seleccione una opción: \n")
+                data_size = load_data(control , filesize) #Se cargan datos y se guarda el tamaño en data_size
+                sort_year_lists(control) 
+                print_carga_datos(data_size , control)
+                
+                
+            
             elif int(inputs) == 2:
                 print_req_1(control)
 
