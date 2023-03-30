@@ -81,6 +81,7 @@ def print_req_1(control):
     """
         Función que imprime la solución del Requerimiento 1 en consola
     """
+    
     # TODO: Imprimir el resultado del requerimiento 1
     pass
 
@@ -89,6 +90,8 @@ def print_req_2(control):
     """
         Función que imprime la solución del Requerimiento 2 en consola
     """
+    
+    
     # TODO: Imprimir el resultado del requerimiento 2
     pass
 
@@ -162,6 +165,8 @@ if __name__ == "__main__":
                 print_req_1(control)
 
             elif int(inputs) == 3:
+                anio = input("¿Que año desea consultar?: ")
+                cod_sector = input("Ingrese el codigo de sector economico: ")
                 print_req_2(control)
 
             elif int(inputs) == 4:
