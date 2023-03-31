@@ -247,7 +247,10 @@ def print_req_7(control , top , año , cod_sub):
     """
     # TODO: Imprimir el resultado del requerimiento 7
     
-    ordenada = controller.req_7(control , año , cod_sub)
+    ordenada , delta_time = controller.req_7(control , año , cod_sub)
+    
+    print(delta_time , "TIEMPO")
+    
     
     dic_aux1 = {        
                         "Código activdad económica":[],

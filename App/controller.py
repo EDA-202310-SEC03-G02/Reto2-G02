@@ -174,9 +174,12 @@ def req_7(control , año , cod_sub):
     Retorna el resultado del requerimiento 7
     """
     # TODO: Modificar el requerimiento 7
+    t1 = get_time()
     data_structs = control["model"]
     ordenada = model.req_7(data_structs , año , cod_sub)
-    return ordenada
+    t2 = get_time()
+    delta_time = t2 -t1
+    return ordenada , delta_time
 
 def req_8(control):
     """
