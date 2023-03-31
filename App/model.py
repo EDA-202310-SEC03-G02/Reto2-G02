@@ -579,8 +579,6 @@ def print_carga_datos(data_structs):
     map_year = data_structs["year"]
     keys_years = mp.keySet(map_year) #Saca las llaves a lt.list
     s_keys_years = merg.sort(keys_years , compareYears2)
-    for element in lt.iterator(s_keys_years):
-        print(element , "Holallalalal")
     
     for key in lt.iterator(s_keys_years): #loop para tomar cada año
         key_value = mp.get(map_year , key)

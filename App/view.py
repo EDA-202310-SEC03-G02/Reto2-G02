@@ -105,7 +105,8 @@ def print_req_1(control , concat):
         Función que imprime la solución del Requerimiento 1 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 1
-    first = controller.req_1(control , concat)
+    first , delta_time = controller.req_1(control , concat)
+    print(delta_time , "TIEMPO")
     print(first["Código actividad económica"])
     dic_aux1 = {        "Código actividad económica":[first["Código actividad económica"]],
                         "Nombre actividad económica":[first["Nombre actividad económica"]],
@@ -132,7 +133,8 @@ def print_req_3(control , año):
         Función que imprime la solución del Requerimiento 3 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 3
-    lista_ret_subsector , s_data_subector = controller.req_3(control , año)
+    lista_ret_subsector , s_data_subector , delta_time = controller.req_3(control , año)
+    print(delta_time , "TIEMPO")
     
     dic_aux1 = {        "Código sector económico":[lt.getElement(lista_ret_subsector , 1)],
                         "Nombre sector económico":[lt.getElement(lista_ret_subsector , 2)],
