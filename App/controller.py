@@ -122,13 +122,12 @@ def req_1(control , concat):
     return first
 
 
-def req_2(control):
+def req_2(control,año,codigo):
     """
     Retorna el resultado del requerimiento 2
     """
-    # TODO: Modificar el requerimiento 2
-    pass
-
+    data_structs = control["model"]
+    return(model.req_2(data_structs,año,codigo))
 
 def req_3(control , año):
     """

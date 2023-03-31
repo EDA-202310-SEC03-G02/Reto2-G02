@@ -107,25 +107,37 @@ def print_req_1(control , concat):
     # TODO: Imprimir el resultado del requerimiento 1
     first = controller.req_1(control , concat)
     print(first["Código actividad económica"])
-    dic_aux1 = {        "Código actividad económica":[first["Código actividad económica"]],
-                        "Nombre actividad económica":[first["Nombre actividad económica"]],
-                        "Código subsector económico":[first["Código subsector económico"]],
-                        "Nombre subsector económico":[first["Nombre subsector económico"]],
-                        "Total ingresos netos":[first["Total ingresos netos"]],
-                        "Total costos y gastos":[first["Total costos y gastos"]],
-                        "Total saldo a pagar":[first["Total saldo a pagar"]],
-                        "Total saldo a favor":[first["Total saldo a favor"]]
-                        }
+    dic_aux1 = {"Código actividad económica":[first["Código actividad económica"]],
+                "Nombre actividad económica":[first["Nombre actividad económica"]],
+                "Código subsector económico":[first["Código subsector económico"]],
+                "Nombre subsector económico":[first["Nombre subsector económico"]],
+                "Total ingresos netos":[first["Total ingresos netos"]],
+                "Total costos y gastos":[first["Total costos y gastos"]],
+                "Total saldo a pagar":[first["Total saldo a pagar"]],
+                "Total saldo a favor":[first["Total saldo a favor"]]}
     
     print(tabulate(dic_aux1, headers="keys", tablefmt="fancy_grid" , maxcolwidths=8 , maxheadercolwidths=6))
 
-def print_req_2(control , año):
+def print_req_2(control,año,codigo):
     """
         Función que imprime la solución del Requerimiento 2 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 2
-    pass
 
+    respuesta =  controller.req_2(control,año,codigo)
+    if not respuesta:
+        print("No se encontro el año o el codigo, porfavor verifique")
+    else:
+        print(respuesta["Código actividad económica"])
+        dic_aux1 = {"Código actividad económica":[respuesta["Código actividad económica"]],
+                    "Nombre actividad económica":[respuesta["Nombre actividad económica"]],
+                    "Código subsector económico":[respuesta["Código subsector económico"]],
+                    "Nombre subsector económico":[respuesta["Nombre subsector económico"]],
+                    "Total ingresos netos":[respuesta["Total ingresos netos"]],
+                    "Total costos y gastos":[respuesta["Total costos y gastos"]],
+                    "Total saldo a pagar":[respuesta["Total saldo a pagar"]],
+                    "Total saldo a favor":[respuesta["Total saldo a favor"]]}
+
+        print(tabulate(dic_aux1, headers="keys", tablefmt="fancy_grid" , maxcolwidths=8 , maxheadercolwidths=6))
 
 def print_req_3(control , año):
     """
@@ -277,9 +289,7 @@ if __name__ == "__main__":
                 data_size = load_data(control , filesize) #Se cargan datos y se guarda el tamaño en data_size
                 sort_year_lists(control) 
                 print_carga_datos(data_size , control)
-                
-                
-            
+
             elif int(inputs) == 2:
                 sector_economico = input("Ingrese el sector económico que desea consultar: ").strip()
                 año_buscar = input("Ingrese el año que desea consultar: ").strip()
@@ -287,8 +297,9 @@ if __name__ == "__main__":
                 print_req_1(control , concat)
 
             elif int(inputs) == 3:
-
-                print_req_2(control)
+                año = input("Ingrese el año que desea buscar: ")
+                codigo = input("Ingrese el codigo de ese año que quiere buscar: ")
+                print_req_2(control,año,codigo)
 
             elif int(inputs) == 4:
                 año = int(input("Ingrese el año que desea consultar: "))

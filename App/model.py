@@ -254,14 +254,23 @@ def req_1(data_structs , concat):
     
 
 
-def req_2(data_structs):
+def req_2(data_structs,año,codigo):
     """
     Función que soluciona el requerimiento 2
     """
-    # TODO: Realizar el requerimiento 2
-    pass
-
-
+    años = data_structs["year"]
+    if mp.contains(años,int(año)) == False:
+        return False
+    llave_valor = mp.get(años,int(año))
+    valor = me.getValue(llave_valor)
+    lista = lt.newList()
+    for i in lt.iterator(valor["data"]):
+        if i['Código sector económico'] == codigo:
+            lt.addLast(lista,i)
+    merg.sort(lista,cmp_saldo_favor)
+    return lt.firstElement(lista)
+    
+    
 def req_3(data_structs , year):
     """
     Función que soluciona el requerimiento 3
@@ -376,10 +385,6 @@ def find_subsector(lista_keys , map_subsector):
         pos_in += 1
     
     return pos
-        
-        
-    
-
 
 def req_4(data_structs):
     """
@@ -507,7 +512,14 @@ def cmp_impuestos_by_total_saldo(impuesto1, impuesto2):
         ret_var = True
     else:      
         ret_var = False
-        
+    return ret_var
+
+def cmp_saldo_favor(impuesto1, impuesto2):
+    ret_var = None
+    if int(impuesto1["Total saldo a favor"]) > int(impuesto2["Total saldo a favor"]):
+        ret_var = True
+    else:      
+        ret_var = False
     return ret_var
 
 def cmp_impuestos_by_total_ret(impuesto1, impuesto2):
