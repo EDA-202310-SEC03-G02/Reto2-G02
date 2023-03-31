@@ -232,29 +232,30 @@ def print_req_4(control,año):
         Función que imprime la solución del Requerimiento 4 en consola
     """
     respuesta = controller.req_4(control,año)
+    print(respuesta)
     try:
         if not respuesta:
             raise Exception("No se encontro el año, porfavor intente con uno distinto")
         
-        dic_aux1 = {"Código sector económico":respuesta[1]["Código sector económico"],
-                    "Nombre sector económico":respuesta[1]["Nombre sector económico"],
-                    "Código subsector económico":respuesta[1]["Código subsector económico"],
-                    "Nombre subsector económico":respuesta[1]["Nombre subsector económico"],
-                    "Total ingresos netos":respuesta[1]["Total ingresos netos"],
-                    "Total costos y gastos":respuesta[1]["Total costos y gastos"],
-                    "Total saldo por pagar":respuesta[1]["Total saldo por pagar"],
-                    "Total saldo a favor":respuesta[1]["Total saldo a favor"],
+        dic_aux1 = {"Código sector económico":respuesta[0]["Código sector económico"],
+                    "Nombre sector económico":respuesta[0]["Nombre sector económico"],
+                    "Código subsector económico":respuesta[0]["Código subsector económico"],
+                    "Nombre subsector económico":respuesta[0]["Nombre subsector económico"],
+                    "Total ingresos netos":respuesta[0]["Total ingresos netos"],
+                    "Total costos y gastos":respuesta[0]["Total costos y gastos"],
+                    "Total saldo por pagar":respuesta[0]["Total saldo por pagar"],
+                    "Total saldo a favor":respuesta[0]["Total saldo a favor"],
                     }
     
         print(tabulate(dic_aux1, headers="keys", tablefmt="fancy_grid" , maxcolwidths=8 , maxheadercolwidths=6))
         
-        dic_aux4 = {    "Código actividad económica":[],
-                        "Nombre actividad económica":[],
-                        "Total retenciones":[],
-                        "Total ingresos netos":[],
-                        "Total costos y gastos":[],
-                        "Total saldo por pagar":[],
-                        "Total saldo a favor":[]}
+        dic_aux4 = {  "Código actividad económica":[],
+                "Nombre actividad económica":[],
+                "Total retenciones":[],
+                "Total ingresos netos":[],
+                "Total costos y gastos":[],
+                "Total saldo por pagar":[],
+                "Total saldo a favor":[]}
         
         for element in lt.iterator(respuesta[1]):
             dic_aux4["Código actividad económica"].append(element["Código actividad económica"])
