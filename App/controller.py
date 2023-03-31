@@ -163,13 +163,14 @@ def req_6(control):
     pass
 
 
-def req_7(control):
+def req_7(control , año , cod_sub):
     """
     Retorna el resultado del requerimiento 7
     """
     # TODO: Modificar el requerimiento 7
-    pass
-
+    data_structs = control["model"]
+    ordenada = model.req_7(data_structs , año , cod_sub)
+    return ordenada
 
 def req_8(control):
     """

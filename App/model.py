@@ -405,13 +405,21 @@ def req_6(data_structs):
     pass
 
 
-def req_7(data_structs):
+def req_7(data_structs , año , cod_sub):
     """
     Función que soluciona el requerimiento 7
     """
     # TODO: Realizar el requerimiento 7
-    pass
-
+    map_year = data_structs["year_subsector"]
+    key_val = mp.get(map_year , año)
+    val = me.getValue(key_val)
+    sublist_map = val["map_subsector"]
+    key_val2 = mp.get(sublist_map , cod_sub)
+    val2 = me.getValue(key_val2)
+    lista_elementos = val2["data"] #lista con elementos
+    
+    ordenada = merg.sort(lista_elementos , cmp_impuestos_by_total_costos)
+    return ordenada
 
 def req_8(data_structs):
     """
@@ -513,6 +521,15 @@ def cmp_impuestos_by_total_saldo(impuesto1, impuesto2):
 def cmp_impuestos_by_total_ret(impuesto1, impuesto2):
     ret_var = None
     if int(impuesto1["Total retenciones"]) > int(impuesto2["Total retenciones"]):
+        ret_var = True
+    else:      
+        ret_var = False
+        
+    return ret_var
+
+def cmp_impuestos_by_total_costos(impuesto1, impuesto2):
+    ret_var = None
+    if int(impuesto1["Total costos y gastos"]) < int(impuesto2["Total costos y gastos"]):
         ret_var = True
     else:      
         ret_var = False

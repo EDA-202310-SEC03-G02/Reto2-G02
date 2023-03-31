@@ -239,14 +239,52 @@ def print_req_6(control):
     pass
 
 
-def print_req_7(control):
+def print_req_7(control , top , año , cod_sub):
     """
         Función que imprime la solución del Requerimiento 7 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 7
-    pass
+    
+    ordenada = controller.req_7(control , año , cod_sub)
+    
+    dic_aux1 = {        
+                        "Código activdad económica":[],
+                        "Nombre actividad económica":[],
+                        "Código sector económico":[],
+                        "Nombre sector económico":[],
+                        "Total ingresos netos":[],
+                        "Total costos y gastos":[],
+                        "Total saldo por pagar":[],
+                        "Total saldo a favor":[]}
+    
+    len_ordenada = lt.size(ordenada)
+    if len_ordenada < top:
+        print("Solo hay " + str(len_ordenada) + " actividades economicas en el subsector " + str(cod_sub) + \
+            " para el año " + str(año))
+        for element in lt.iterator(ordenada):
+            dic_aux1["Nombre actividad económica"].append(element["Nombre actividad económica"])
+            dic_aux1["Código activdad económica"].append(element["Código actividad económica"])
+            dic_aux1["Código sector económico"].append(element["Código sector económico"])
+            dic_aux1["Nombre sector económico"].append(element["Código subsector económico"])
+            dic_aux1["Total ingresos netos"].append(element["Total ingresos netos"])
+            dic_aux1["Total costos y gastos"].append(element["Total costos y gastos"])
+            dic_aux1["Total saldo por pagar"].append(element["Total saldo a pagar"])
+            dic_aux1["Total saldo a favor"].append(element["Total saldo a favor"])
+        
+    else:
+        sublist1 = lt.subList(ordenada , 1 , top)
+        for element in lt.iterator(sublist1):
+            dic_aux1["Nombre actividad económica"].append(element["Nombre actividad económica"])
+            dic_aux1["Código activdad económica"].append(element["Código actividad económica"])
+            dic_aux1["Código sector económico"].append(element["Código sector económico"])
+            dic_aux1["Nombre sector económico"].append(element["Código subsector económico"])
+            dic_aux1["Total ingresos netos"].append(element["Total ingresos netos"])
+            dic_aux1["Total costos y gastos"].append(element["Total costos y gastos"])
+            dic_aux1["Total saldo por pagar"].append(element["Total saldo a pagar"])
+            dic_aux1["Total saldo a favor"].append(element["Total saldo a favor"])
 
-
+    print(tabulate(dic_aux1, headers="keys", tablefmt="fancy_grid" , maxcolwidths=8 , maxheadercolwidths=6))   
+            
 def print_req_8(control):
     """
         Función que imprime la solución del Requerimiento 8 en consola
@@ -304,7 +342,10 @@ if __name__ == "__main__":
                 print_req_6(control)
 
             elif int(inputs) == 8:
-                print_req_7(control)
+                top = int(input("Ingrese el top de actividades económicas: "))
+                año = int(input("Ingrese el año: "))
+                cod_sub = int(input("Ingrese el codigo subsector: "))
+                print_req_7(control , top , año , cod_sub)
 
             elif int(inputs) == 9:
                 print_req_8(control)
