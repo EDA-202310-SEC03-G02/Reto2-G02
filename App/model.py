@@ -386,13 +386,34 @@ def find_subsector(lista_keys , map_subsector):
     
     return pos
 
-def req_4(data_structs):
+def req_4(data_structs,año):
     """
     Función que soluciona el requerimiento 4
     """
     # TODO: Realizar el requerimiento 4
-    pass
+    años = data_structs["year"]
+    if mp.contains(años,int(año)) == False:
+        return False
+    llave_valor = mp.get(años,int(año))
+    valor = me.getValue(llave_valor)
+    merg.sort(valor["data"],cmp_costos_y_gatos)
+    subsector = lt.firstElement(valor["data"])
+    subsector1 = subsector["Código subsector económico"]
 
+    lista = lt.newList()
+    for i in lt.iterator(valor["data"]):
+        if i['Código subsector económico'] == subsector1:
+            lt.addLast(lista,i)
+
+    if lt.size(lista) <= 5:
+        return subsector,lista
+    else:
+        primeros = lt.subList(lista,1,3)
+        ultimos = lt.subList(lista,lt.size(lista)-3,lt.size(lista))
+        for i in lt.iterator(ultimos):
+            lt.addLast(primeros,i)
+        return subsector,primeros
+        
 
 def req_5(data_structs):
     """
@@ -517,6 +538,14 @@ def cmp_impuestos_by_total_saldo(impuesto1, impuesto2):
 def cmp_saldo_favor(impuesto1, impuesto2):
     ret_var = None
     if int(impuesto1["Total saldo a favor"]) > int(impuesto2["Total saldo a favor"]):
+        ret_var = True
+    else:      
+        ret_var = False
+    return ret_var
+
+def cmp_costos_y_gatos(impuesto1, impuesto2):
+    ret_var = None
+    if int(impuesto1["Costos y gastos nómina"]) > int(impuesto2["Costos y gastos nómina"]):
         ret_var = True
     else:      
         ret_var = False

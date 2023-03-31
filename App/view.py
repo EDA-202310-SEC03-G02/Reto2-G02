@@ -227,13 +227,49 @@ def print_req_3(control , año):
         print(tabulate(dic_aux4, headers="keys", tablefmt="fancy_grid" , maxcolwidths=8 , maxheadercolwidths=6))
         
         
-def print_req_4(control):
+def print_req_4(control,año):
     """
         Función que imprime la solución del Requerimiento 4 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 4
-    pass
-
+    respuesta = controller.req_4(control,año)
+    try:
+        if not respuesta:
+            raise Exception("No se encontro el año, porfavor intente con uno distinto")
+        
+        dic_aux1 = {"Código sector económico":respuesta[1]["Código sector económico"],
+                    "Nombre sector económico":respuesta[1]["Nombre sector económico"],
+                    "Código subsector económico":respuesta[1]["Código subsector económico"],
+                    "Nombre subsector económico":respuesta[1]["Nombre subsector económico"],
+                    "Total ingresos netos":respuesta[1]["Total ingresos netos"],
+                    "Total costos y gastos":respuesta[1]["Total costos y gastos"],
+                    "Total saldo por pagar":respuesta[1]["Total saldo por pagar"],
+                    "Total saldo a favor":respuesta[1]["Total saldo a favor"],
+                    }
+    
+        print(tabulate(dic_aux1, headers="keys", tablefmt="fancy_grid" , maxcolwidths=8 , maxheadercolwidths=6))
+        
+        dic_aux4 = {    "Código actividad económica":[],
+                        "Nombre actividad económica":[],
+                        "Total retenciones":[],
+                        "Total ingresos netos":[],
+                        "Total costos y gastos":[],
+                        "Total saldo por pagar":[],
+                        "Total saldo a favor":[]}
+        
+        for element in lt.iterator(respuesta[1]):
+            dic_aux4["Código actividad económica"].append(element["Código actividad económica"])
+            dic_aux4["Nombre actividad económica"].append(element["Nombre actividad económica"])
+            dic_aux4["Costos y gastos nómina"].append(element["Costos y gastos nómina"])
+            dic_aux4["Total ingresos netos"].append(element["Total ingresos netos"])
+            dic_aux4["Total costos y gastos"].append(element["Total costos y gastos"])
+            dic_aux4["Total saldo por pagar"].append(element["Total saldo a pagar"])
+            dic_aux4["Total saldo a favor"].append(element["Total saldo a favor"])
+        
+        print(tabulate(dic_aux4, headers="keys", tablefmt="fancy_grid" , maxcolwidths=8 , maxheadercolwidths=6))
+        
+        
+    except Exception as e:
+        print(e)
 
 def print_req_5(control):
     """
@@ -306,7 +342,8 @@ if __name__ == "__main__":
                 print_req_3(control , año)
 
             elif int(inputs) == 5:
-                print_req_4(control)
+                año = int(input("Ingrese el año que desea consultar: "))
+                print_req_4(control,año)
 
             elif int(inputs) == 6:
                 print_req_5(control)

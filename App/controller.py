@@ -139,12 +139,13 @@ def req_3(control , año):
     return lista_ret_subsector , s_data_subector
 
 
-def req_4(control):
+def req_4(control,año):
     """
     Retorna el resultado del requerimiento 4
     """
     # TODO: Modificar el requerimiento 4
-    pass
+    data_structs = control["model"]
+    return (model.req_4(data_structs,año))
 
 
 def req_5(control):
