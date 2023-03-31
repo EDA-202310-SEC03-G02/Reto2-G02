@@ -68,6 +68,14 @@ def add_data(data_structs, data):
     """
     Función para agregar nuevos elementos a la lista
     """
+    
+    catalog = {'años': None,}
+
+    catalog['años'] = mp.newMap(1,
+                                   maptype='PROBING',
+                                   loadfactor=0.5,
+                                   cmpfunction=compareAnios)
+
     anios = data_structs['años']
     #print(anios)
     existanio = mp.contains(anios, data["Año"])
@@ -117,12 +125,25 @@ def req_1(data_structs):
     pass
 
 
-def req_2(data_structs):
+def req_2(data_structs,data,año,codigo):
     """
     Función que soluciona el requerimiento 2
     """
     # TODO: Realizar el requerimiento 2
-    pass
+    anios = mp.newMap(1,
+    maptype='PROBING',
+    loadfactor=0.5,
+    cmpfunction=compareAnios)
+    #print(anios)
+    existanio = mp.contains(anios, data["Año"])
+    if existanio:
+        entry = mp.get(anios, data["Año"])
+        info = me.getValue(entry)
+        #print(info)
+        lt.addLast(info, data)
+    else:
+        print(data["Año"])
+        mp.put(anios, data["Año"], lt.newList('ARRAY_LIST', compareAuthorsByName))
 
 
 def req_3(data_structs):

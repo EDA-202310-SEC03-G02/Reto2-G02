@@ -87,6 +87,10 @@ def req_2(control):
     """
     Retorna el resultado del requerimiento 2
     """
+    datafile = cf.data_dir + 'DIAN/Salida_agregados_renta_juridicos_AG-small.csv'
+    input_file = csv.DictReader(open(datafile, encoding='utf-8'))
+    for dato in input_file:
+        model.add_data(control['model'], dato)
     # TODO: Modificar el requerimiento 2
     pass
 
