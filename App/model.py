@@ -51,8 +51,15 @@ def new_data_structs():
     Inicializa las estructuras de datos del modelo. Las crea de
     manera vacía para posteriormente almacenar la información.
     """
+    catalog = {'años': None,}
+
+    catalog['años'] = mp.newMap(1,
+                                   maptype='PROBING',
+                                   loadfactor=0.5,
+                                   cmpfunction=compareAnios)
+
     #TODO: Inicializar las estructuras de datos
-    pass
+    return catalog
 
 
 # Funciones para agregar informacion al modelo
@@ -61,8 +68,17 @@ def add_data(data_structs, data):
     """
     Función para agregar nuevos elementos a la lista
     """
-    #TODO: Crear la función para agregar elementos a una lista
-    pass
+    anios = data_structs['años']
+    #print(anios)
+    existanio = mp.contains(anios, data["Año"])
+    if existanio:
+        entry = mp.get(anios, data["Año"])
+        info = me.getValue(entry)
+        #print(info)
+        lt.addLast(info, data)
+    else:
+        print(data["Año"])
+        mp.put(anios, data["Año"], lt.newList('ARRAY_LIST', compareAuthorsByName))
 
 
 # Funciones para creacion de datos
@@ -189,3 +205,29 @@ def sort(data_structs):
     """
     #TODO: Crear función de ordenamiento
     pass
+
+def compareAnios(id, entry):
+    """
+    Compara dos ids de libros, id es un identificador
+    y entry una pareja llave-valor
+    """
+    identry = me.getKey(entry)
+    if (int(id) == int(identry)):
+        return 0
+    elif (int(id) > int(identry)):
+        return 1
+    else:
+        return -1
+    
+def compareAuthorsByName(keyname, author):
+    """
+    Compara dos nombres de autor. El primero es una cadena
+    y el segundo un entry de un map
+    """
+    authentry = me.getKey(author)
+    if (keyname == authentry):
+        return 0
+    elif (keyname > authentry):
+        return 1
+    else:
+        return -1

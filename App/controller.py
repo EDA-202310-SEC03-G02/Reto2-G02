@@ -35,9 +35,11 @@ def new_controller():
     """
     Crea una instancia del modelo
     """
-    #TODO: Llamar la función del modelo que crea las estructuras de datos
-    pass
-
+    control = {
+        'model': None
+    }
+    control['model'] = model.new_data_structs()
+    return control
 
 # Funciones para la carga de datos
 
@@ -45,8 +47,12 @@ def load_data(control, filename):
     """
     Carga los datos del reto
     """
+    datafile = cf.data_dir + 'DIAN/Salida_agregados_renta_juridicos_AG-small.csv'
+    input_file = csv.DictReader(open(datafile, encoding='utf-8'))
+    for dato in input_file:
+        model.add_data(control['model'], dato)
     # TODO: Realizar la carga de datos
-    pass
+    
 
 
 # Funciones de ordenamiento
