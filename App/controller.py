@@ -112,12 +112,14 @@ def get_data(control, id):
     pass
 
 
-def req_1(control):
+def req_1(control , concat):
     """
     Retorna el resultado del requerimiento 1
     """
     # TODO: Modificar el requerimiento 1
-    pass
+    data_structs = control["model"]
+    first = model.req_1(data_structs, concat)
+    return first
 
 
 def req_2(control):
@@ -128,12 +130,14 @@ def req_2(control):
     pass
 
 
-def req_3(control):
+def req_3(control , año):
     """
     Retorna el resultado del requerimiento 3
     """
     # TODO: Modificar el requerimiento 3
-    pass
+    data_structs = control["model"]
+    lista_ret_subsector , s_data_subector = model.req_3(data_structs , año)
+    return lista_ret_subsector , s_data_subector
 
 
 def req_4(control):

@@ -67,6 +67,18 @@ def newCatalog():
                                    maptype='CHAINING',
                                    loadfactor=1,
                                    cmpfunction=compareMapYear)
+    """ 
+    Este indice crea un map cuyos valores son el sector concatenado con el año así sector-año.
+    """
+    catalog["sector-año"] = mp.newMap(10000,
+                                   maptype='CHAINING',
+                                   loadfactor=2,
+                                   cmpfunction=compareMapYear)
+    
+    catalog["year_subsector"] = mp.newMap(20,
+                                   maptype='CHAINING',
+                                   loadfactor=1,
+                                   cmpfunction=compareMapYear)
     
     return catalog
     
@@ -80,6 +92,8 @@ def add_data(data_structs, data):
     #TODO: Crear la función para agregar elementos a una lista
     lt.addLast(data_structs['data'], data)
     addYear(data_structs , data)
+    add_SectorYear(data_structs , data)
+    addYear2(data_structs , data)
     
 def addYear(data_structs , data):
     try:
@@ -107,6 +121,93 @@ def newYear(year):
     entry['data'] = lt.newList('SINGLE_LINKED', compareYears)
     return entry
         
+def add_SectorYear(data_structs , data):
+    try:
+        sectoryear_map = data_structs["sector-año"] #Aqui esta el map vacio
+        data_year = data["Año"].strip()
+        data_sector = data["Código sector económico"].strip()
+        concat = data_sector + "-" + data_year
+        exist_concat = mp.contains(sectoryear_map , concat) #pregunto si contiene el mapa el concat
+        
+        if exist_concat:
+            entry = mp.get(sectoryear_map , concat)
+            entry_value = me.getValue(entry)
+        else:
+            entry_value = newconcat(concat)
+            mp.put(sectoryear_map , concat , entry_value)
+        lt.addLast(entry_value["data"] , data)
+    except Exception:
+        return None
+
+def newconcat(concat):
+    """
+    Esta funcion crea la estructura de actividades año concatenadas
+    """
+    entry = {'concat': "", "data": None}
+    entry['concat'] = concat
+    entry['data'] = lt.newList('SINGLE_LINKED', compareYears)
+    return entry
+
+def addYear2(data_structs , data):
+    try:
+        year_map = data_structs["year_subsector"] #Aqui esta el map vacio
+        data_year = int(data["Año"])
+        exist_year = mp.contains(year_map , data_year) #pregunto si contiene el mapa el año
+        
+        if exist_year:
+            entry = mp.get(year_map , data_year)
+            entry_value = me.getValue(entry)
+        else:
+            entry_value = newYear2(data_year)
+            mp.put(year_map , data_year , entry_value)
+        lt.addLast(entry_value["data"] , data)
+        
+        add_map_subsector(entry_value , data)
+    except Exception:
+        return None
+
+def newYear2(year):
+    """
+    Esta funcion crea la estructura de libros asociados
+    a un año.
+    """
+    entry = {'year': "", "data": None , "map_subsector" : None}
+    entry['year'] = year
+    entry['data'] = lt.newList('SINGLE_LINKED', compareYears)
+    entry['map_subsector'] = mp.newMap(20,
+                                   maptype='CHAINING',
+                                   loadfactor=1,
+                                   cmpfunction=compareMapYear)
+    
+    return entry
+
+def add_map_subsector(entry_value , data):
+    try:
+        subsector_map = entry_value["map_subsector"] #Aqui esta el map vacio
+        
+        data_subsector = int(data["Código subsector económico"])
+        exist_subsector = mp.contains(subsector_map , data_subsector) #pregunto si contiene el mapa el subsector
+        
+        if exist_subsector:
+            entry = mp.get(subsector_map , data_subsector)
+            entry_value_subsec = me.getValue(entry)
+        else:
+            entry_value_subsec = newSubsector(data_subsector)
+            mp.put(subsector_map , data_subsector , entry_value_subsec)
+        lt.addLast(entry_value_subsec["data"] , data)
+        
+    except Exception:
+        return None
+
+def newSubsector(data_subsector):
+    """
+    Esta funcion crea la estructura de taxes asociados
+    a un subsector.
+    """
+    entry = {'subsector': "", "data": None}
+    entry['subsector'] = data_subsector
+    entry['data'] = lt.newList('SINGLE_LINKED')
+    return entry
 
 
 # Funciones para creacion de datos
@@ -137,12 +238,20 @@ def data_size(data_structs):
     return lt.size(data_structs["data"])
 
 
-def req_1(data_structs):
+def req_1(data_structs , concat):
     """
     Función que soluciona el requerimiento 1
     """
     # TODO: Realizar el requerimiento 1
-    pass
+    map_sec_año = data_structs["sector-año"]
+    llave_valor = mp.get(map_sec_año , concat)
+    valor = me.getValue(llave_valor)
+    list_valor = valor["data"] #lista con las actividades del año y subsector
+    s_list_valor = merg.sort(list_valor , cmp_impuestos_by_total_saldo)
+    first = lt.firstElement(s_list_valor) #Mayor saldo a pagar
+    return first
+    
+    
 
 
 def req_2(data_structs):
@@ -153,12 +262,123 @@ def req_2(data_structs):
     pass
 
 
-def req_3(data_structs):
+def req_3(data_structs , year):
     """
     Función que soluciona el requerimiento 3
     """
     # TODO: Realizar el requerimiento 3
-    pass
+    map_year_subsector = data_structs["year_subsector"]
+    key_value_year = mp.get(map_year_subsector , int(year))
+    year_sub_map = me.getValue(key_value_year) #aca tengo el entry para una año específico.
+    map_subsector = year_sub_map["map_subsector"] #extraigo del entry el mapa cuyas lleves son subsectores.
+    
+    #Ahora debo encontrar el subsector con el menor total de retenciones (Total retenciones)
+    #Saco las llaves del map en una lista
+    lista_keys = mp.keySet(map_subsector)
+    
+    position = find_subsector(lista_keys , map_subsector)
+    
+    #Aca lo importante es saber que subsector fue el que menos aportó
+    
+    elemento_ret = lt.getElement(lista_keys , position) #Este es el subsector
+    
+    #Extraigo ese elemento
+    
+    subsector_key_val = mp.get(map_subsector , elemento_ret)
+    subsector_val = me.getValue(subsector_key_val)
+    data_subector = subsector_val["data"] #Aca tengo una lista con las actividades.
+    
+    #Sacar las que mas y menos aportaron
+    #1 Hacer el sort
+    s_data_subector = merg.sort(data_subector , cmp_impuestos_by_total_ret)
+    #Ya puedo enviar la lista ordenada al view para que tome las 3 primeras y tres ultimas
+    #Solo me falta hacer la sumatoria de los datos del subector.
+    #Los totales son:
+    # Código sector económico. 1
+    # Nombre sector económico.2
+    # Código subsector económico. 3
+    # Nombre subsector económico. 4
+    # El total retenciones. 5
+    # El total ingresos netos. 6
+    # El total costos y gastos. 7
+    # El total saldo por pagar. 8
+    # El total saldo a favor. 9
+    
+    #Acá retornare una lista con la información para acomodar en el view.
+    lista_ret_subsector = lt.newList()
+    
+    codigo_sector = None
+    nombre_sector = None
+    cod_sub = None
+    name_sub = None
+    total_retenciones = 0
+    total_ingresos = 0
+    total_costos_gas = 0
+    total_saldo_pagar = 0
+    total_saldo_favor = 0
+    
+    #Tomo un elemento cualquiera
+    elemento_cualquiera = lt.getElement(s_data_subector , 1)
+    codigo_sector = elemento_cualquiera["Código sector económico"]
+    nombre_sector = elemento_cualquiera["Nombre sector económico"]
+    cod_sub = elemento_cualquiera["Código subsector económico"]
+    name_sub = elemento_cualquiera["Nombre subsector económico"]
+    
+    
+    
+    
+    for element in lt.iterator(s_data_subector):
+        total_retenciones += int(element["Total retenciones"])
+        total_ingresos += int(element["Total ingresos netos"])
+        total_costos_gas += int(element["Total costos y gastos"])
+        total_saldo_pagar += int(element["Total saldo a pagar"])
+        total_saldo_favor += int(element["Total saldo a favor"])
+    
+    lt.addLast(lista_ret_subsector , codigo_sector)
+    lt.addLast(lista_ret_subsector , nombre_sector)
+    lt.addLast(lista_ret_subsector , cod_sub)
+    lt.addLast(lista_ret_subsector , name_sub)
+    lt.addLast(lista_ret_subsector , total_retenciones)
+    lt.addLast(lista_ret_subsector , total_ingresos)    
+    lt.addLast(lista_ret_subsector , total_costos_gas)
+    lt.addLast(lista_ret_subsector , total_saldo_pagar)
+    lt.addLast(lista_ret_subsector , total_saldo_favor)
+    
+    return lista_ret_subsector , s_data_subector
+    #Finalmente se retorna una lista con los elementos del subsector para el primer print
+    # y la lista de actividades para sacar las primeras tres y las ultimas tres.
+    
+def find_subsector(lista_keys , map_subsector):
+    """
+    Esta funcion debe hallar el subsector con menor total de retenciones (Total retenciones)
+    """
+    total_retenciones = None
+    pos = 1
+    pos_in = 1
+    for element in lt.iterator(lista_keys):
+        key_value = mp.get(map_subsector , element) #Extraigo los subsectores 1 a 1
+        value = me.getValue(key_value) #Tengo aca la estructura {subector : "" , data: "" , data tiene la lista}
+        data_acitividades = value["data"] #Esto es una list
+        
+        #Ahora lo que sigue es iterar sobre cada actividad y sumar las retenciones.
+        tot_parcial_ret = 0
+        for element in lt.iterator(data_acitividades):
+            retenciones = int(element["Total retenciones"]) #Extraigo las retenciones del elemento
+            tot_parcial_ret += retenciones
+        
+        #Con el total de retenciones completos ahora comparamos con total_retenciones.
+        
+        if total_retenciones == None: #Primera iteración
+            total_retenciones = tot_parcial_ret
+        elif tot_parcial_ret < total_retenciones: #si el total parcial es menor al anterior reemplazar
+            total_retenciones = tot_parcial_ret
+            pos = pos_in
+        pos_in += 1
+    
+    return pos
+        
+        
+    
 
 
 def req_4(data_structs):
@@ -229,6 +449,19 @@ def compareMapYear(year , entry):
     else:
         return -1
     
+def compareMapYear(conc , entry):
+    """
+    Compara dos llaves codigo-año. El primero es un str
+    y el segundo un entry de un map.
+    """
+    entry = me.getKey(entry)
+    if (conc == entry):
+        return 0
+    elif (conc > entry):
+        return 1
+    else:
+        return -1   
+    
 def compareYears(year1, year2):
     if (int(year1) == int(year2)):
         return 0
@@ -246,9 +479,40 @@ def compareYears2(year1, year2):
         
     return ret_var
 
+
 def cmp_codigo_act_ec(actividad1, actividad2):
+    try:
+        ret_var = None
+        if int(actividad1["Código actividad económica"]) < int(actividad2["Código actividad económica"]):
+            ret_var = True
+        else:      
+            ret_var = False
+        return ret_var
+    
+    except Exception:
+        ret_var = None
+        var1 = actividad1["Código actividad económica"]
+        var1 = var1[0:3]
+        var2 = actividad2["Código actividad económica"]
+        var2 = var1[0:3]
+        if int(var1) < int(var2):
+            ret_var = True
+        else:      
+            ret_var = False
+        return ret_var
+
+def cmp_impuestos_by_total_saldo(impuesto1, impuesto2):
     ret_var = None
-    if int(actividad1["Código actividad económica"]) < int(actividad2["Código actividad económica"]):
+    if int(impuesto1["Total saldo a pagar"]) > int(impuesto2["Total saldo a pagar"]):
+        ret_var = True
+    else:      
+        ret_var = False
+        
+    return ret_var
+
+def cmp_impuestos_by_total_ret(impuesto1, impuesto2):
+    ret_var = None
+    if int(impuesto1["Total retenciones"]) > int(impuesto2["Total retenciones"]):
         ret_var = True
     else:      
         ret_var = False
@@ -281,7 +545,8 @@ def sort_year_lists(data_structs):
         sort_list_by_code(list_to_sort)
         
 def sort_list_by_code(list_to_sort):
-    merg.sort(list_to_sort , cmp_codigo_act_ec)    
+
+    merg.sort(list_to_sort , cmp_codigo_act_ec)
 
 
 def sort(data_structs):
@@ -366,3 +631,4 @@ def print_carga_datos(data_structs):
                 dic_aux1["Total saldo a favor"].append(element["Total saldo a favor"])
         
         print(tabulate(dic_aux1, headers="keys", tablefmt="fancy_grid" , maxcolwidths=8 , maxheadercolwidths=6))
+        
